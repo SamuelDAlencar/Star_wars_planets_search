@@ -67,6 +67,19 @@ function TableProvider({ children }) {
     }));
   };
 
+  const removeFilter = ({ target: { value } }) => {
+    setNumericFilter({
+      filterByNumericValues: [
+        ...numericFilter.filterByNumericValues
+          .filter((filter) => filter.column !== value),
+      ],
+    });
+  };
+
+  const removeAllFilters = () => {
+    setNumericFilter({ filterByNumericValues: [] });
+  };
+
   // ---------onUpdate()-------------
   useEffect(() => {
     numericFilter.filterByNumericValues
@@ -79,6 +92,11 @@ function TableProvider({ children }) {
           }
           return planet[column] === value;
         })));
+    if (numericFilter.filterByNumericValues.length === 0) {
+      setFiltered({
+        filtered: false,
+      });
+    }
   }, [numericFilter]);
 
   return (
@@ -91,6 +109,8 @@ function TableProvider({ children }) {
         numericFilter,
         filteredData,
         addFilter,
+        removeFilter,
+        removeAllFilters,
         filtered,
       } }
     >

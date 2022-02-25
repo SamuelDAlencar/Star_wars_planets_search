@@ -8,8 +8,11 @@ function Table() {
     inputHandler,
     currFilter: { value },
     nameFilter: { filterByName: { name } },
+    numericFilter,
     filteredData,
     addFilter,
+    removeFilter,
+    removeAllFilters,
     filtered,
   } = useContext(tableContext);
 
@@ -62,6 +65,32 @@ function Table() {
           Filter
         </button>
       </section>
+      <section>
+        {filtered.filtered
+          && (
+            <>
+              <button
+                type="button"
+                data-testid="button-remove-filters"
+                onClick={ removeAllFilters }
+              >
+                Remove All Filters
+              </button>
+              {
+                numericFilter.filterByNumericValues.map((filter) => filter !== 'filtered'
+            && (
+              <button
+                type="button"
+                key={ filter.column }
+                onClick={ removeFilter }
+                value={ filter.column }
+                data-testid="filter"
+              >
+                {`${filter.column} ${filter.comparison} ${filter.value} X`}
+              </button>))
+              }
+            </>)}
+      </section>
       <table>
         <thead>
           <tr>
@@ -73,7 +102,7 @@ function Table() {
           </tr>
         </thead>
         <tbody>
-          { filtered && filteredData.length > 0
+          { filtered.filtered
             ? <Planet data={ filteredData } name={ name } />
             : <Planet data={ data } name={ name } />}
         </tbody>
