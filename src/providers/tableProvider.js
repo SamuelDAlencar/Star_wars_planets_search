@@ -19,7 +19,9 @@ function TableProvider({ children }) {
     comparison: 'maior que',
     value: 0,
   });
-  const [filtered, setFiltered] = useState(false);
+  const [filtered, setFiltered] = useState({
+    filtered: false,
+  });
   const [filteredData, setFilteredData] = useState([]);
 
   // ---------------Functions----------------
@@ -34,6 +36,7 @@ function TableProvider({ children }) {
     getData();
   }, []);
 
+  // ---------------Functions----------------
   const inputHandler = ({ target }) => {
     const { id, value } = target;
 
@@ -56,7 +59,12 @@ function TableProvider({ children }) {
         currFilter,
       ],
     }));
-    setFiltered(true);
+
+    setFiltered((prevState) => ({
+      ...prevState,
+      filtered: true,
+      [currFilter.column]: true,
+    }));
   };
 
   // ---------onUpdate()-------------
