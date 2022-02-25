@@ -6,7 +6,7 @@ function Table() {
   const {
     data,
     inputHandler,
-    currFilter: { value },
+    currFilter: { value, column },
     nameFilter: { filterByName: { name } },
     numericFilter,
     filteredData,
@@ -15,6 +15,10 @@ function Table() {
     removeAllFilters,
     filtered,
   } = useContext(tableContext);
+
+  const columns = [
+    'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water',
+  ];
 
   return (
     <>
@@ -29,17 +33,16 @@ function Table() {
           data-testid="column-filter"
           onChange={ inputHandler }
           id="column"
+          value={ column }
         >
-          { !filtered.population
-          && <option value="population">population</option>}
-          { !filtered.orbital_period
-          && <option value="orbital_period">orbital_period</option>}
-          { !filtered.diameter
-          && <option value="diameter">diameter</option>}
-          { !filtered.rotation_period
-          && <option value="rotation_period">rotation_period</option>}
-          { !filtered.surface_water
-          && <option value="surface_water">surface_water</option>}
+          {columns.map((currColumn) => !filtered[currColumn]
+            && (
+              <option
+                key={ currColumn }
+                value={ currColumn }
+              >
+                { currColumn }
+              </option>))}
         </select>
         <select
           data-testid="comparison-filter"
@@ -77,17 +80,22 @@ function Table() {
                 Remove All Filters
               </button>
               {
-                numericFilter.filterByNumericValues.map((filter) => filter !== 'filtered'
+                numericFilter.filterByNumericValues
+                  .map((filter, i) => filter !== 'filtered'
             && (
-              <button
-                type="button"
-                key={ filter.column }
-                onClick={ removeFilter }
-                value={ filter.column }
+              <span
                 data-testid="filter"
+                key={ `${filter.column} - ${i}` }
               >
-                {`${filter.column} ${filter.comparison} ${filter.value} X`}
-              </button>))
+                {`${filter.column} ${filter.comparison} ${filter.value}`}
+                <button
+                  type="button"
+                  onClick={ removeFilter }
+                  value={ filter.column }
+                >
+                  X
+                </button>
+              </span>))
               }
             </>)}
       </section>

@@ -5,6 +5,9 @@ import fetchAPI from '../services/fetchAPI';
 
 function TableProvider({ children }) {
   // ---------------States----------------
+  const columns = [
+    'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water',
+  ];
   const [data, setData] = useState([]);
   const [nameFilter, setNameFilter] = useState({
     filterByName: {
@@ -14,13 +17,13 @@ function TableProvider({ children }) {
   const [numericFilter, setNumericFilter] = useState({
     filterByNumericValues: [],
   });
+  const [filtered, setFiltered] = useState({
+    filtered: false,
+  });
   const [currFilter, setCurrFilter] = useState({
     column: 'population',
     comparison: 'maior que',
     value: 0,
-  });
-  const [filtered, setFiltered] = useState({
-    filtered: false,
   });
   const [filteredData, setFilteredData] = useState([]);
 
@@ -68,12 +71,17 @@ function TableProvider({ children }) {
   };
 
   const removeFilter = ({ target: { value } }) => {
+    setFilteredData(data);
     setNumericFilter({
       filterByNumericValues: [
         ...numericFilter.filterByNumericValues
           .filter((filter) => filter.column !== value),
       ],
     });
+    setFiltered((prevState) => ({
+      ...prevState,
+      [value]: false,
+    }));
   };
 
   const removeAllFilters = () => {
@@ -83,20 +91,26 @@ function TableProvider({ children }) {
   // ---------onUpdate()-------------
   useEffect(() => {
     numericFilter.filterByNumericValues
-      .map(({ comparison, value, column }) => setFilteredData(filteredData
-        .filter((planet) => {
-          if (comparison === 'maior que') {
-            return planet[column] > Number(value);
-          } if (comparison === 'menor que') {
-            return planet[column] < Number(value);
-          }
-          return planet[column] === value;
-        })));
+      .map(({ comparison, value, column }) => setFilteredData(
+        filteredData
+          .filter((planet) => {
+            if (comparison === 'maior que') {
+              return planet[column] > Number(value);
+            } if (comparison === 'menor que') {
+              return planet[column] < Number(value);
+            }
+            return planet[column] === value;
+          }),
+      ));
     if (numericFilter.filterByNumericValues.length === 0) {
       setFiltered({
         filtered: false,
       });
     }
+    setCurrFilter((prevState) => ({
+      ...prevState,
+      column: columns.find((currColumn) => !filtered[currColumn]),
+    }));
   }, [numericFilter]);
 
   return (
