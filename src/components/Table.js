@@ -5,11 +5,11 @@ import Planet from './Planet';
 function Table() {
   const {
     data,
-    filteredData,
-    nameFilter: { filterByName: { name } },
-    numericFilter: { filterByNumericValues: [{ value }] },
     inputHandler,
-    filterTable,
+    currFilter: { value },
+    nameFilter: { filterByName: { name } },
+    filteredData,
+    addFilter,
     filtered,
   } = useContext(tableContext);
 
@@ -51,7 +51,7 @@ function Table() {
         />
         <button
           type="button"
-          onClick={ filterTable }
+          onClick={ addFilter }
           data-testid="button-filter"
         >
           Filter

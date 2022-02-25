@@ -4,32 +4,35 @@ import tableContext from '../contexts/tableContext';
 import fetchAPI from '../services/fetchAPI';
 
 function TableProvider({ children }) {
-  // ---------------Consts----------------
+  // ---------------States----------------
   const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
   const [nameFilter, setNameFilter] = useState({
     filterByName: {
       name: '',
     },
   });
-
   const [numericFilter, setNumericFilter] = useState({
-    filterByNumericValues: [
-      {
-        column: 'population',
-        comparison: 'maior que',
-        value: 0,
-      },
-    ],
+    filterByNumericValues: [],
   });
-
+  const [currFilter, setCurrFilter] = useState({
+    column: 'population',
+    comparison: 'maior que',
+    value: 0,
+  });
   const [filtered, setFiltered] = useState(false);
+  const [filteredData, setFilteredData] = useState([]);
 
   // ---------------Functions----------------
   const getData = async () => {
     const { results } = await fetchAPI();
     setData(results);
+    setFilteredData(results);
   };
+
+  // ---------------onMount----------------
+  useEffect(() => {
+    getData();
+  }, []);
 
   const inputHandler = ({ target }) => {
     const { id, value } = target;
@@ -40,49 +43,46 @@ function TableProvider({ children }) {
           name: target.value,
         },
       })
-      : setNumericFilter((prevState) => ({
-        filterByNumericValues: [
-          {
-            ...prevState.filterByNumericValues[0],
-            [id]: value,
-          },
-        ],
+      : setCurrFilter((prevState) => ({
+        ...prevState,
+        [id]: value,
       }));
   };
 
-  const filterTable = () => {
-    setFiltered(true);
-    const { comparison, value, column } = numericFilter.filterByNumericValues[0];
-
-    setFilteredData(data.filter((planet) => {
-      if (comparison === 'maior que') {
-        return planet[column] > Number(value);
-      } if (comparison === 'menor que') {
-        return planet[column] < Number(value);
-      }
-      return planet[column] === value;
+  const addFilter = async () => {
+    setNumericFilter((prevState) => ({
+      filterByNumericValues: [
+        ...prevState.filterByNumericValues,
+        currFilter,
+      ],
     }));
+    setFiltered(true);
   };
 
-  // ---------------onMount----------------
-  useEffect(() => {
-    getData();
-  }, []);
-
   // ---------onUpdate()-------------
-  // useEffect(() => {
-
-  // }, []);
+  useEffect(() => {
+    numericFilter.filterByNumericValues
+      .map(({ comparison, value, column }) => setFilteredData(filteredData
+        .filter((planet) => {
+          if (comparison === 'maior que') {
+            return planet[column] > Number(value);
+          } if (comparison === 'menor que') {
+            return planet[column] < Number(value);
+          }
+          return planet[column] === value;
+        })));
+  }, [numericFilter]);
 
   return (
     <tableContext.Provider
       value={ {
         data,
-        filteredData,
+        inputHandler,
+        currFilter,
         nameFilter,
         numericFilter,
-        inputHandler,
-        filterTable,
+        filteredData,
+        addFilter,
         filtered,
       } }
     >
