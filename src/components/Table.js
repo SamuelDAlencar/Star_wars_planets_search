@@ -5,20 +5,17 @@ import Planet from './Planet';
 function Table() {
   const {
     data,
-    inputHandler,
-    currFilter: { value, column },
-    nameFilter: { filterByName: { name } },
-    numericFilter,
     filteredData,
+    COLUMNS,
+    currFilter: { value, column, comparison },
+    nameFilter: { filterByName: { name } },
+    filters: { filterByNumericValues },
+    activeFilters,
+    inputHandler,
     addFilter,
     removeFilter,
     removeAllFilters,
-    filtered,
   } = useContext(tableContext);
-
-  const columns = [
-    'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water',
-  ];
 
   return (
     <>
@@ -35,7 +32,7 @@ function Table() {
           id="column"
           value={ column }
         >
-          {columns.map((currColumn) => !filtered[currColumn]
+          {COLUMNS.map((currColumn) => !activeFilters[currColumn]
             && (
               <option
                 key={ currColumn }
@@ -48,6 +45,7 @@ function Table() {
           data-testid="comparison-filter"
           onChange={ inputHandler }
           id="comparison"
+          value={ comparison }
         >
           <option value="maior que">maior que</option>
           <option value="menor que">menor que</option>
@@ -69,7 +67,7 @@ function Table() {
         </button>
       </section>
       <section>
-        {filtered.filtered
+        {activeFilters.isDataFiltered
           && (
             <>
               <button
@@ -80,22 +78,21 @@ function Table() {
                 Remove All Filters
               </button>
               {
-                numericFilter.filterByNumericValues
-                  .map((filter, i) => filter !== 'filtered'
-            && (
-              <span
-                data-testid="filter"
-                key={ `${filter.column} - ${i}` }
-              >
-                {`${filter.column} ${filter.comparison} ${filter.value}`}
-                <button
-                  type="button"
-                  onClick={ removeFilter }
-                  value={ filter.column }
-                >
-                  X
-                </button>
-              </span>))
+                filterByNumericValues
+                  .map((filter, i) => (
+                    <span
+                      data-testid="filter"
+                      key={ `${filter.column} - ${i}` }
+                    >
+                      {`${filter.column} ${filter.comparison} ${filter.value}`}
+                      <button
+                        type="button"
+                        onClick={ removeFilter }
+                        value={ filter.column }
+                      >
+                        X
+                      </button>
+                    </span>))
               }
             </>)}
       </section>
@@ -110,7 +107,7 @@ function Table() {
           </tr>
         </thead>
         <tbody>
-          { filtered.filtered
+          { activeFilters.isDataFiltered
             ? <Planet data={ filteredData } name={ name } />
             : <Planet data={ data } name={ name } />}
         </tbody>
