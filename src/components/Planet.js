@@ -8,7 +8,7 @@ function Planet({ data, name }) {
           .includes(name.toLowerCase())
     && (
       <tr key={ i }>
-        <td>{ result.name }</td>
+        <td data-testid="planet-name">{ result.name }</td>
         <td>{ result.rotation_period }</td>
         <td>{ result.orbital_period }</td>
         <td>{ result.diameter }</td>

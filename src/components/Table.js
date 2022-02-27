@@ -15,6 +15,7 @@ function Table() {
     addFilter,
     removeFilter,
     removeAllFilters,
+    sortPlanets,
   } = useContext(tableContext);
 
   return (
@@ -24,7 +25,7 @@ function Table() {
           type="text"
           onChange={ inputHandler }
           data-testid="name-filter"
-          id="name-filter"
+          name="name-filter"
         />
         <select
           data-testid="column-filter"
@@ -94,7 +95,48 @@ function Table() {
                       </button>
                     </span>))
               }
-            </>)}
+            </>
+          )}
+        <select
+          data-testid="column-sort"
+          name="select-column"
+          onChange={ inputHandler }
+        >
+          {COLUMNS.map((currColumn) => (
+            <option
+              key={ currColumn }
+              value={ currColumn }
+            >
+              { currColumn }
+            </option>))}
+        </select>
+        <label htmlFor="asc">
+          Ascendent
+          <input
+            type="radio"
+            name="select-sort"
+            value="ASC"
+            data-testid="column-sort-input-asc"
+            onChange={ inputHandler }
+          />
+        </label>
+        <label htmlFor="desc">
+          Descendent
+          <input
+            type="radio"
+            name="select-sort"
+            value="DESC"
+            data-testid="column-sort-input-desc"
+            onChange={ inputHandler }
+          />
+        </label>
+        <button
+          type="button"
+          data-testid="column-sort-button"
+          onClick={ sortPlanets }
+        >
+          Order
+        </button>
       </section>
       <table>
         <thead>

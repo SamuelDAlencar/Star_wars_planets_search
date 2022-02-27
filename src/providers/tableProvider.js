@@ -9,9 +9,13 @@ function TableProvider({ children }) {
     'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water',
   ];
   const NAME_FILTER = 'name-filter';
+  const SELECT_COLUMN = 'select-column';
+  const SELECT_SORT = 'select-sort';
+  const ASC = 'ASC';
   const BIGGER_THAN = 'maior que';
   const LESS_THAN = 'menor que';
   const ZERO = 0;
+  const MINUS_1 = -1;
   // ---------------States----------------
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -22,6 +26,10 @@ function TableProvider({ children }) {
   });
   const [filters, setFilters] = useState({
     filterByNumericValues: [],
+  });
+  const [sort, setSort] = useState({
+    column: COLUMNS[0],
+    sort: ASC,
   });
   const [activeFilters, setActiveFilters] = useState({
     isDataFiltered: false,
@@ -35,8 +43,8 @@ function TableProvider({ children }) {
   // ---------------Functions----------------
   const getData = async () => {
     const { results } = await fetchAPI();
-    setData(results);
-    setFilteredData(results);
+    setData(results.sort((a, b) => a.name.localeCompare(b.name)));
+    setFilteredData(results.sort((a, b) => a.name.localeCompare(b.name)));
   };
 
   // ---------------onMount----------------
@@ -46,18 +54,31 @@ function TableProvider({ children }) {
 
   // ---------------Functions----------------
   const inputHandler = ({ target }) => {
-    const { id, value } = target;
+    const { name, id, value } = target;
 
-    return target.id === NAME_FILTER
-      ? setNameFilter({
+    switch (name) {
+    case NAME_FILTER:
+      return setNameFilter({
         filterByName: {
-          name: target.value,
+          name: value,
         },
-      })
-      : setCurrFilter((prevState) => ({
+      });
+    case SELECT_COLUMN:
+      return setSort((prevState) => ({
+        ...prevState,
+        column: value,
+      }));
+    case SELECT_SORT:
+      return setSort((prevState) => ({
+        ...prevState,
+        sort: value,
+      }));
+    default:
+      return setCurrFilter((prevState) => ({
         ...prevState,
         [id]: value,
       }));
+    }
   };
 
   const addFilter = async () => {
@@ -96,6 +117,32 @@ function TableProvider({ children }) {
     setFilters({ filterByNumericValues: [] });
   };
 
+  const sortPlanets = () => {
+    setFilteredData(
+      filteredData.sort((a, b) => {
+        if (sort.sort === ASC) {
+          if (a[sort.column] === 'unknown') {
+            return MINUS_1;
+          } if (b[sort.column] === 'unknown') {
+            return 1;
+          }
+          return a[sort.column] - b[sort.column];
+        }
+
+        if (a[sort.column] === 'unknown') {
+          return 1;
+        } if (b[sort.column] === 'unknown') {
+          return MINUS_1;
+        }
+        return b[sort.column] - a[sort.column];
+      }),
+    );
+
+    setActiveFilters({
+      sort: true,
+    });
+  };
+
   // ---------onUpdate(filters)-------------
   useEffect(() => {
     const { filterByNumericValues } = filters;
@@ -119,6 +166,10 @@ function TableProvider({ children }) {
             }
           }),
       ));
+
+    if (activeFilters.sort) {
+      sortPlanets();
+    }
 
     if (filters.filterByNumericValues.length === ZERO) {
       setActiveFilters({
@@ -147,6 +198,7 @@ function TableProvider({ children }) {
         addFilter,
         removeFilter,
         removeAllFilters,
+        sortPlanets,
         activeFilters,
       } }
     >
