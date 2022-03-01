@@ -1,0 +1,46 @@
+.header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+}
+
+.header__h1 {
+  font-size: 270%;
+  margin: 5px 0 15px;
+}
+
+.filters {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-button {
+  padding: 5px;
+}
+
+.active-filters {
+  display: flex;
+  flex-direction: column;
+}
+
+.table, .header {
+  backdrop-filter: blur(6.8px);
+  background: rgba(0, 0, 0, 0.54);
+  border: 1px solid rgba(0, 0, 0, 0.54);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  margin: 15px;
+}
+
+th, td {
+  border: 1px solid white;
+  font-size: 120%;
+  height: 50px;
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  font-size: 140%;
+}

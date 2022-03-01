@@ -1,9 +1,10 @@
 body {
-  color: black;
-  font-family: Star Jedi Rounded , sans-serif;
+  background: url('../images/star-wars-backgrounds-14.jpg');
+  color: white;
+  font-family: Gill Sans , Gill Sans MT , Calibri , Trebuchet MS , sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   margin: 0;
 }
 

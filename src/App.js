@@ -5,14 +5,9 @@ import TableProvider from './providers/tableProvider';
 
 function App() {
   return (
-    <>
-      <header>
-        <h1 className="header__h1">Star Wars Planets</h1>
-      </header>
-      <TableProvider>
-        <Table />
-      </TableProvider>
-    </>
+    <TableProvider>
+      <Table />
+    </TableProvider>
   );
 }
 
